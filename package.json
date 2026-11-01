@@ -1,0 +1,12 @@
+{
+  "name": "ombre-du-shogun",
+  "version": "1.0.0",
+  "private": true,
+  "description": "L'Ombre du Shogun : jeu de bluff et de trahison, de 3 à 10 joueurs.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

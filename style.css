@@ -1,0 +1,122 @@
+@font-face { font-family: 'Pinceau'; src: url('fonts/shippori-mincho-b1-latin-800-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Mincho'; src: url('fonts/shippori-mincho-b1-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Mincho'; src: url('fonts/shippori-mincho-b1-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Mincho'; src: url('fonts/shippori-mincho-b1-latin-800-normal.woff2') format('woff2'); font-weight: 800; font-display: swap; }
+
+:root {
+  --aizome: #16223D;        /* indigo teint, le fond */
+  --aizome-nuit: #0D1530;   /* creux, panneaux */
+  --aizome-clair: #24345A;  /* bordures, survols */
+  --washi: #EDE3CF;         /* papier, texte principal */
+  --washi-sourd: #A9A08E;   /* texte secondaire */
+  --or: #C9A24A;            /* feuille d'or : le trône */
+  --beni: #C23B42;          /* rouge carthame : la lame */
+  --mousse: #7E9C6B;        /* vert mousse : l'Héritier, la veille */
+  --encens: #8B6F4E;        /* bâton d'encens */
+  --rayon-s: 6px;
+  --rayon-l: 14px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--aizome);
+  background-image:
+    radial-gradient(120% 80% at 50% -10%, rgba(201,162,74,.10), transparent 60%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 2px, transparent 2px 7px);
+  color: var(--washi);
+  font-family: 'Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pinceau { font-family: 'Pinceau', 'Mincho', serif; font-weight: 400; letter-spacing: -.015em; line-height: 1.02; }
+.sourd { color: var(--washi-sourd); }
+.or { color: var(--or); }
+.beni { color: var(--beni); }
+.mousse { color: var(--mousse); }
+
+button {
+  font: inherit; color: inherit; cursor: pointer;
+  border: 1px solid var(--aizome-clair); background: var(--aizome-nuit);
+  border-radius: var(--rayon-s); padding: .7em 1.1em;
+  transition: background .15s, border-color .15s, transform .08s;
+}
+button:hover { border-color: var(--washi-sourd); }
+button:active { transform: scale(.98); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--or); outline-offset: 2px; }
+button:disabled { opacity: .45; cursor: default; }
+button.principal { background: var(--washi); color: var(--aizome-nuit); border-color: var(--washi); font-weight: 700; }
+button.principal:hover { background: #fff; }
+button.lame { background: var(--beni); border-color: var(--beni); color: #fff; font-weight: 700; }
+button.discret { background: transparent; border-color: transparent; color: var(--washi-sourd); }
+button.discret:hover { color: var(--washi); border-color: var(--aizome-clair); }
+
+input[type=text] {
+  font: inherit; font-size: 1.2rem; color: var(--washi);
+  background: var(--aizome-nuit); border: 1px solid var(--aizome-clair);
+  border-radius: var(--rayon-s); padding: .75em .9em; width: 100%;
+}
+
+/* Blason d'un joueur : un mon, cercle à l'initiale */
+.mon {
+  --c: var(--washi-sourd);
+  --fond-mon: var(--aizome-nuit);
+  display: inline-grid; place-items: center; flex: none;
+  width: 2.1em; height: 2.1em; border-radius: 50%;
+  color: var(--c);
+}
+.mon svg { width: 100%; height: 100%; display: block; }
+.mon.plein { background: var(--c); color: var(--aizome-nuit); --fond-mon: var(--c); }
+
+/* Décor illustré */
+.decor { position: fixed; left: 0; right: 0; bottom: 0; height: 82vh; pointer-events: none; z-index: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent); mask-image: linear-gradient(to top, #000 55%, transparent); }
+.decor img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; opacity: 0; transition: opacity 1.4s ease; }
+.decor img.visible { opacity: 1; animation: respire 40s ease-in-out infinite alternate; }
+.decor::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(22,34,61,.6), rgba(22,34,61,.15) 55%, rgba(22,34,61,.4)); }
+@keyframes respire { from { transform: scale(1); } to { transform: scale(1.05); } }
+/* Les scènes peintes occupent tout l'écran ; un voile à gauche garde le texte lisible */
+.decor.peinte { top: 0; height: auto; -webkit-mask-image: none; mask-image: none; }
+.decor.peinte::after { background: linear-gradient(90deg, rgba(13,21,48,.85) 0%, rgba(13,21,48,.5) 35%, rgba(13,21,48,0) 60%), linear-gradient(to top, rgba(13,21,48,.65), transparent 30%); }
+/* Sur grand écran, la scène remplit la colonne principale pour que le sujet ne passe pas sous les panneaux */
+@media (min-width: 861px) { .decor.peinte { right: 33%; -webkit-mask-image: linear-gradient(to left, transparent, #000 16%); mask-image: linear-gradient(to left, transparent, #000 16%); } }
+.decor img.lame { transition: none; clip-path: inset(0 100% 0 0); opacity: .95; }
+.decor img.lame.visible { clip-path: inset(0 0 0 0); transition: clip-path .45s cubic-bezier(.7,0,.3,1); animation: none; z-index: 1; }
+
+/* Bâton d'encens : le minuteur */
+.encens { position: relative; height: 22px; }
+.encens .baton {
+  position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px;
+  background: linear-gradient(90deg, #6d5438, var(--encens));
+  transition: width 1s linear;
+}
+.encens .cendre {
+  position: absolute; top: 9px; height: 4px; right: 0; border-radius: 2px;
+  background: repeating-linear-gradient(90deg, rgba(237,227,207,.16) 0 3px, transparent 3px 6px);
+}
+.encens .braise {
+  position: absolute; top: 6px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%;
+  background: radial-gradient(circle, #ffd28a 0 25%, #e0582d 55%, rgba(224,88,45,0) 75%);
+  box-shadow: 0 0 14px 4px rgba(224,88,45,.45);
+  transition: left 1s linear;
+  animation: braise 1.6s ease-in-out infinite;
+}
+.encens .fumee {
+  position: absolute; bottom: 12px; width: 2px; height: 30px; margin-left: -1px;
+  background: linear-gradient(to top, rgba(237,227,207,.25), transparent);
+  border-radius: 2px; filter: blur(1px); transform-origin: bottom;
+  animation: fumee 3.4s ease-in-out infinite; transition: left 1s linear;
+}
+.encens.urgent .braise { animation-duration: .5s; }
+@keyframes braise { 50% { box-shadow: 0 0 20px 7px rgba(224,88,45,.6); } }
+@keyframes fumee { 0%,100% { transform: skewX(8deg) scaleY(.9); opacity: .6; } 50% { transform: skewX(-10deg) scaleY(1.1); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+.cache { display: none !important; }

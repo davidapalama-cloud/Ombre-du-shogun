@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16223D">
+<title>L'Ombre du Shogun — Palais</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { min-height: 100vh; }
+  .ecran { position: relative; z-index: 1; min-height: 100vh; padding: clamp(16px, 3vw, 40px); }
+  .panneau { background: rgba(13,21,48,.8); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-radius: var(--rayon-l); padding: 16px 18px; }
+
+  /* ---------- Salle d'attente ---------- */
+  .salle { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; max-width: 1280px; margin: 0 auto; }
+  .salle h1 { font-size: clamp(2.8rem, 6.5vw, 5.6rem); margin: .1em 0 .15em; color: var(--washi); }
+  .salle h1 .ombre { display: block; color: var(--or); }
+  .accroche { font-size: 1.2rem; max-width: 42ch; color: var(--washi-sourd); margin: 0 0 2rem; }
+  .entree { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .qr { background: var(--washi); border-radius: var(--rayon-l); padding: 12px; width: clamp(170px, 19vw, 230px); aspect-ratio: 1; }
+  .qr img { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+  .entree p { margin: 0 0 .4rem; }
+  .entree > div:last-child { background: rgba(13,21,48,.72); border-radius: var(--rayon-l); padding: 14px 16px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .url { font-size: 1.05rem; color: var(--or); word-break: break-all; }
+  .code-salon { display: flex; align-items: baseline; gap: 12px; margin-bottom: .8rem !important; }
+  .code-salon strong { font-family: 'Pinceau', serif; font-weight: 400; font-size: 2.6rem; letter-spacing: .12em; color: var(--washi); line-height: 1; }
+  .actions-salle { display: flex; gap: 12px; margin-top: 2.2rem; flex-wrap: wrap; align-items: center; }
+  .actions-salle .principal { font-size: 1.2rem; padding: .85em 1.6em; }
+
+  .courtisans h2 { font-weight: 700; font-size: 1.1rem; margin: 0 0 .8rem; display: flex; justify-content: space-between; }
+  .courtisans ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .courtisans li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(13,21,48,.85); border-radius: var(--rayon-s); }
+  .courtisans li .mon { font-size: 1.15rem; }
+  .courtisans li .nom { flex: 1; font-size: 1.15rem; }
+  .courtisans li.absent { opacity: .5; }
+  .vide { color: var(--washi-sourd); font-style: italic; padding: 10px 0; }
+
+  /* ---------- Partie ---------- */
+  .partie { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr); gap: clamp(20px, 3vw, 48px); max-width: 1400px; margin: 0 auto; }
+  .entete { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--washi-sourd); }
+  .entete .controles { display: flex; gap: 8px; }
+  .titre-phase { font-size: clamp(3.2rem, 7.5vw, 6.8rem); margin: .25em 0 .1em; }
+  .salle h1, .titre-phase, .accroche, .consigne { text-shadow: 0 2px 18px rgba(8,13,30,.95), 0 0 4px rgba(8,13,30,.8); }
+  .titre-phase.encre { animation: encre .9s ease-out; }
+  @keyframes encre { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: blur(0); } }
+  .consigne { font-size: clamp(1.1rem, 1.8vw, 1.45rem); max-width: 46ch; margin: 0 0 1.2rem; }
+  .encens { max-width: 720px; margin: 8px 0 28px; }
+
+  .scene { min-height: 260px; }
+  .carte-resultat { border-left: 4px solid var(--c, var(--or)); padding: 18px 22px; background: var(--aizome-nuit); border-radius: 0 var(--rayon-l) var(--rayon-l) 0; max-width: 760px; }
+  .carte-resultat.revele { animation: revele .7s cubic-bezier(.2,.8,.2,1); }
+  @keyframes revele { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+  .carte-resultat h3 { font-family: 'Pinceau', serif; font-weight: 400; font-size: clamp(2rem, 4vw, 3.2rem); margin: 0 0 .25em; color: var(--c, var(--or)); line-height: 1.1; }
+  .carte-resultat p { margin: 0; font-size: 1.25rem; max-width: 52ch; }
+
+  .progression { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+  .progression { background: rgba(13,21,48,.72); padding: 10px 14px; border-radius: var(--rayon-l); width: fit-content; }
+  .progression .goutte { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--washi-sourd); }
+  .progression .goutte.faite { background: var(--washi); border-color: var(--washi); }
+  .progression span { margin-left: 8px; color: var(--washi-sourd); }
+
+  .depouillement { margin-top: 22px; display: grid; gap: 8px; max-width: 560px; background: rgba(13,21,48,.8); padding: 14px 16px; border-radius: var(--rayon-l); }
+  .depouillement .ligne { display: grid; grid-template-columns: 130px 1fr 28px; gap: 12px; align-items: center; }
+  .depouillement .barre { height: 10px; border-radius: 5px; background: var(--washi-sourd); }
+  .depouillement .ligne.ninja .barre { background: var(--beni); }
+  .depouillement .ligne.ninja .qui { color: var(--beni); }
+
+  .vainqueur { margin-top: 10px; }
+  .vainqueur .nom-vainqueur { font-size: clamp(3rem, 7vw, 6rem); color: var(--or); }
+
+  /* Colonne de droite : trône + cour */
+  .cote { display: flex; flex-direction: column; gap: 22px; }
+  .trone { position: relative; overflow: hidden; padding: 20px 22px; border-radius: var(--rayon-l);
+    background: linear-gradient(160deg, rgba(201,162,74,.20), rgba(201,162,74,.04) 60%), var(--aizome-nuit);
+    border: 1px solid rgba(201,162,74,.35); }
+  .trone::after { content: '将軍'; position: absolute; right: 10px; bottom: -18px; font-size: 6rem; line-height: 1;
+    color: rgba(201,162,74,.08); font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', serif; pointer-events: none; }
+  .trone .role { color: var(--washi-sourd); margin: 0; }
+  .trone.vacant { background: var(--aizome-nuit); border-color: rgba(194,59,66,.45); }
+  .trone.vacant .role { color: var(--beni); }
+  .trone.vacant .shogun .nom { color: var(--washi-sourd); }
+  .trone .shogun { display: flex; align-items: center; gap: 14px; margin: 6px 0 14px; }
+  .trone .shogun .mon { font-size: 1.6rem; }
+  .trone .shogun .nom { font-family: 'Pinceau', serif; font-size: clamp(2rem, 3.4vw, 2.8rem); color: var(--or); line-height: 1.1; }
+  .trone .heritier { display: flex; align-items: center; gap: 10px; }
+  .trone .heritier .nom { color: var(--mousse); font-weight: 700; font-size: 1.15rem; }
+
+  .cour ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .cour li { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 8px 10px; border-radius: var(--rayon-s); }
+  .cour li.est-shogun { background: rgba(201,162,74,.10); }
+  .cour .nom { font-size: 1.1rem; }
+  .cour .mon { font-size: 1.15rem; }
+  .cour .etiquette { font-size: .85rem; color: var(--washi-sourd); display: block; line-height: 1.2; }
+  .cour .etiquette.beni { color: var(--beni); }
+  .cour .etiquette.mousse { color: var(--mousse); }
+  .cour .absent { opacity: .5; }
+  .points { display: flex; gap: 4px; }
+  .points i { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid rgba(201,162,74,.5); }
+  .points i.gagne { background: var(--or); border-color: var(--or); }
+  .points b { font-weight: 700; color: var(--or); margin-left: 6px; font-size: .95rem; }
+
+  .chronique h2, .cour h2 { font-size: 1rem; font-weight: 700; margin: 0 0 .5rem; color: var(--washi-sourd); }
+  .chronique ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .chronique li { font-size: .95rem; color: var(--washi-sourd); }
+  .chronique li:first-child { color: var(--washi); }
+  .chronique li small { color: var(--washi-sourd); margin-right: 6px; }
+
+  .connexion { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); background: var(--beni); color: #fff; padding: 8px 16px; border-radius: 20px; }
+
+  dialog { background: var(--aizome-nuit); color: var(--washi); border: 1px solid var(--aizome-clair); border-radius: var(--rayon-l); max-width: 720px; width: calc(100% - 32px); padding: 28px; }
+  dialog::backdrop { background: rgba(5,9,20,.7); }
+  dialog h2 { font-family: 'Pinceau', serif; font-weight: 400; font-size: 2.4rem; margin: 0 0 .4em; color: var(--or); }
+  dialog h3 { margin: 1.2em 0 .3em; font-size: 1.1rem; }
+  dialog p, dialog li { max-width: 62ch; }
+  dialog ol { padding-left: 1.2em; }
+  dialog li { margin-bottom: .4em; }
+
+  @media (max-width: 860px) {
+    .salle, .partie { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="decor" class="decor" aria-hidden="true"></div>
+<main id="app" class="ecran" aria-live="polite"></main>
+<div id="connexion" class="connexion cache" role="status">Connexion au jeu perdue. Reconnexion…</div>
+
+<dialog id="regles">
+  <h2>Les règles</h2>
+  <p>Un joueur est Shogun, tout le monde le sait. Chaque manche où il garde le trône lui rapporte 1 point. Le premier à atteindre l'objectif gagne : 5 points de 5 à 7 joueurs, 4 points sinon.</p>
+  <h3>Une manche</h3>
+  <ol>
+    <li><strong>La Cour.</strong> Le Shogun nomme son Héritier sur son téléphone. Négociez à voix haute. Il ne peut pas nommer le même Héritier deux fois de suite.</li>
+    <li><strong>L'Heure du Tigre.</strong> En silence, chacun regarde son écran. Le jeu a peut-être choisi un Ninja : lui seul le sait, et il choisit de frapper le Shogun ou d'attendre. Tous les autres, Shogun compris, surveillent un joueur. Parfois, il n'y a pas de Ninja du tout.</li>
+    <li><strong>Le Gong.</strong> Si le Ninja frappe, il est pris quand le Shogun le surveillait, ou quand au moins deux autres joueurs le surveillaient. Les autres joueurs qui le surveillaient gagnent alors 1 point, et le Ninja est en disgrâce à la manche suivante. Sinon, le Shogun tombe. Mettez-vous d'accord pendant la Cour pour surveiller à deux… mais le Ninja peut être dans votre alliance.</li>
+    <li><strong>Le Conseil.</strong> Après un assassinat, débattez puis votez : qui est le Ninja ? Si vous le trouvez, l'Héritier monte sur le trône. Sinon, ou en cas d'égalité, le Ninja prend le trône. Et si l'Héritier était le Ninja, il monte sur le trône dans tous les cas.</li>
+  </ol>
+  <h3>À 3 joueurs : le mode Lames</h3>
+  <p>Pas de Ninja tiré au sort. Les deux joueurs peuvent frapper chaque manche, et le Shogun n'en surveille qu'un. Celui qui frappe sans être surveillé prend le trône directement.</p>
+  <h3>Bon à savoir</h3>
+  <p>Quand le Shogun est à 1 point de la victoire, il y a toujours un Ninja. Un joueur en disgrâce ne surveille personne, ne peut pas être Ninja ni Héritier. La partie s'arrête au plus tard après 15 manches (12 à partir de 8 joueurs).</p>
+  <form method="dialog" style="margin-top:1.5rem"><button class="principal">Compris</button></form>
+</dialog>
+
+<script src="blasons.js"></script>
+<script src="commun.js"></script>
+<script>
+'use strict';
+const { el, mon, PHASES, nomDe } = Ombre;
+const app = document.getElementById('app');
+let etat = null;
+let phasePrecedente = null;
+let cleResultat = null;
+let encens = null;
+const decor = Ombre.decor(document.getElementById('decor'));
+
+function lire(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function ecrire(k, v) { try { localStorage.setItem(k, v); } catch {} }
+
+// Le Palais possède un salon : son code (public) et sa clé (secrète, gardée sur cet appareil)
+const palais = { salle: lire('ombre-palais-salle'), cle: lire('ombre-palais-cle') };
+let ecoute = null;
+
+const commande = async (cmd, extra = {}) => {
+  Ombre.debloquerSon();
+  const r = await Ombre.poster('/api/palais', { cmd, ...extra, salle: palais.salle, cle: palais.cle });
+  if (!r.ok) alert(r.erreur);
+};
+
+async function ouvrirSalon(nouveau) {
+  if (ecoute) { ecoute.fermer(); ecoute = null; }
+  if (!nouveau && palais.salle && palais.cle) {
+    const r = await Ombre.poster('/api/salle/reprendre', { salle: palais.salle, cle: palais.cle });
+    if (r.ok) return brancher();
+  }
+  const r = await Ombre.poster('/api/salle/creer', {});
+  if (!r.ok) {
+    app.replaceChildren(el('div', { class: 'salle' }, el('section', {},
+      el('h1', { class: 'pinceau' }, 'L\'Ombre', el('span', { class: 'ombre' }, 'du Shogun')),
+      el('p', { class: 'accroche' }, r.erreur),
+      el('button', { class: 'principal', onclick: () => ouvrirSalon(true) }, 'Réessayer'))));
+    return;
+  }
+  palais.salle = r.salle; palais.cle = r.cle;
+  ecrire('ombre-palais-salle', r.salle); ecrire('ombre-palais-cle', r.cle);
+  brancher();
+}
+
+function brancher() {
+  ecoute = Ombre.ecouter(`/events?salle=${encodeURIComponent(palais.salle)}&cle=${encodeURIComponent(palais.cle)}`, surEtat,
+    (ok) => document.getElementById('connexion').classList.toggle('cache', ok));
+}
+
+ouvrirSalon(false);
+
+function surEtat(e) {
+  if (e.salleInconnue) { phasePrecedente = null; return ouvrirSalon(true); } // le serveur a redémarré
+  const changementPhase = e.phase !== phasePrecedente;
+  etat = e;
+  decor.montrer(Ombre.scenePour(e), Ombre.lameVisible(e));
+  rendre(changementPhase);
+  if (changementPhase) {
+    if (e.phase === 'gong' || e.phase === 'verdict') Ombre.gong(e.phase === 'verdict' ? 0.8 : 1);
+    if (e.phase === 'tigre') Ombre.gong(1.6);
+  }
+  phasePrecedente = e.phase;
+}
+
+document.addEventListener('pointerdown', Ombre.debloquerSon, { once: true });
+
+function rendre(changementPhase) {
+  if (etat.phase === 'salle') return rendreSalle();
+  rendrePartie(changementPhase);
+}
+
+// ------------------------------------------------ Salle d'attente
+function rendreSalle() {
+  encens = null;
+  const n = etat.joueurs.length;
+  const ul = el('ul', {}, etat.joueurs.map((j) => el('li', { class: j.connecte ? '' : 'absent' },
+    mon(j), el('span', { class: 'nom' }, j.nom),
+    el('button', { class: 'discret', 'aria-label': `Exclure ${j.nom}`, onclick: () => commande('exclure', { id: j.id }) }, 'Exclure'))));
+  const manque = Math.max(0, 3 - n);
+  app.replaceChildren(el('div', { class: 'salle' },
+    el('section', {},
+      el('h1', { class: 'pinceau' }, 'L\'Ombre', el('span', { class: 'ombre' }, 'du Shogun')),
+      el('p', { class: 'accroche' }, 'Le trône est à prendre. Garde-le, si tu peux.'),
+      el('div', { class: 'entree' },
+        el('div', { class: 'qr' }, el('img', { src: '/qr.svg?salle=' + encodeURIComponent(etat.salle), alt: 'QR code pour rejoindre la partie' })),
+        el('div', {},
+          el('p', { class: 'code-salon' }, el('span', { class: 'sourd' }, 'Code du salon'), el('strong', {}, etat.salle)),
+          el('p', {}, 'Scanne le QR code avec ton téléphone pour entrer à la cour.'),
+          el('p', { class: 'sourd' }, /^http:\/\/\d/.test(etat.urlJoueur) ? 'Ou ouvre cette adresse, sur le même wifi :' : 'Ou ouvre cette adresse et tape le code :'),
+          el('p', { class: 'url' }, etat.urlJoueur.replace(/\?s=.*/, '')))),
+      el('div', { class: 'actions-salle' },
+        el('button', { class: 'principal', disabled: n < 3 || n > 10, onclick: () => commande('lancer') }, 'Lancer la partie'),
+        el('button', { onclick: () => document.getElementById('regles').showModal() }, 'Lire les règles'),
+        manque ? el('span', { class: 'sourd' }, manque === 1 ? 'Encore 1 joueur pour commencer.' : `Encore ${manque} joueurs pour commencer.`) : null)),
+    el('section', { class: 'courtisans panneau' },
+      el('h2', {}, el('span', {}, 'À la cour'), el('span', { class: 'sourd' }, `${n} / 10`)),
+      n ? ul : el('p', { class: 'vide' }, 'Personne pour l\'instant. Les noms apparaissent ici dès que quelqu\'un rejoint.'))));
+}
+
+// ------------------------------------------------ Partie
+function consigne() {
+  const s = nomDe(etat, etat.shogunId);
+  switch (etat.phase) {
+    case 'cour': return `${s} choisit son Héritier sur son téléphone. Négociez à voix haute et formez vos alliances : à deux sur le même suspect, vous arrêtez sa lame.`;
+    case 'tigre': return etat.config.modeLames
+      ? 'Silence. Chacun cache son écran et fait son choix. Une lame se prépare peut-être.'
+      : 'Silence. Chacun cache son écran et fait son choix. Un Ninja rôde peut-être parmi vous.';
+    case 'gong': return '';
+    case 'conseil': return 'Débattez à voix haute, puis votez sur vos téléphones. Qui tenait la lame ?';
+    case 'verdict': return '';
+    case 'fin': return '';
+    default: return '';
+  }
+}
+
+function carteResultat() {
+  const t = Ombre.texteResultat(etat);
+  if (!t) return null;
+  const cle = JSON.stringify(etat.resultat) + etat.manche;
+  const nouveau = cle !== cleResultat;
+  cleResultat = cle;
+  return el('div', { class: 'carte-resultat' + (nouveau ? ' revele' : ''), style: `--c: var(--${t.ton})` },
+    el('h3', {}, t.titre), el('p', {}, t.detail));
+}
+
+function progression(faits, total, texte) {
+  return el('div', { class: 'progression', 'aria-label': `${faits} sur ${total}` },
+    Array.from({ length: total }, (_, i) => el('i', { class: 'goutte' + (i < faits ? ' faite' : '') })),
+    el('span', {}, texte));
+}
+
+function scene() {
+  const total = etat.joueurs.length;
+  switch (etat.phase) {
+    case 'cour': {
+      const c = etat.heritiersPossibles.map((id) => nomDe(etat, id));
+      return el('p', { class: 'sourd', style: 'background:rgba(13,21,48,.78);padding:10px 14px;border-radius:14px;width:fit-content;max-width:100%' }, `Héritiers possibles : ${Ombre.liste(c)}.`);
+    }
+    case 'tigre':
+      return progression(etat.agis, total, `${etat.agis} sur ${total} ont fait leur choix`);
+    case 'gong':
+      return carteResultat();
+    case 'conseil':
+      return el('div', {}, carteResultat(),
+        el('div', { style: 'margin-top:22px' }, progression(etat.votants.length, total, `${etat.votants.length} sur ${total} ont voté`)));
+    case 'verdict': {
+      const r = etat.resultat;
+      const lignes = Object.entries(r.compte).sort((a, b) => b[1] - a[1]);
+      const max = Math.max(1, ...lignes.map((l) => l[1]));
+      return el('div', {}, carteResultat(),
+        lignes.length ? el('div', { class: 'depouillement', 'aria-label': 'Résultat du vote' },
+          lignes.map(([id, v]) => el('div', { class: 'ligne' + (id === r.ninja ? ' ninja' : '') },
+            el('span', { class: 'qui' }, nomDe(etat, id)),
+            el('div', { class: 'barre', style: `width:${(v / max) * 100}%` }),
+            el('span', {}, v)))) : null);
+    }
+    case 'fin': {
+      const g = etat.gagnants.map((id) => nomDe(etat, id));
+      return el('div', { class: 'vainqueur' },
+        carteResultat(),
+        el('p', { class: 'sourd', style: 'margin-top:28px' }, g.length > 1 ? 'Victoire partagée' : 'Le maître du Japon'),
+        el('p', { class: 'pinceau nom-vainqueur' }, Ombre.liste(g)),
+        el('button', { class: 'principal', style: 'margin-top:20px', onclick: () => commande('rejouer') }, 'Nouvelle partie avec la même cour'));
+    }
+    default: return null;
+  }
+}
+
+function colonneCour() {
+  const shogun = etat.joueurs.find((j) => j.id === etat.shogunId);
+  const heritier = etat.joueurs.find((j) => j.id === etat.heritierId);
+  const obj = etat.config.objectif;
+  const vacant = etat.dechuId && ['gong', 'conseil'].includes(etat.phase);
+  const trone = el('section', { class: 'trone' + (vacant ? ' vacant' : ''), 'aria-label': 'Le trône' },
+    el('p', { class: 'role' }, vacant ? 'Le trône est vacant' : 'Sur le trône'),
+    vacant ? el('div', { class: 'shogun' }, mon(shogun), el('span', { class: 'nom' }, el('s', {}, shogun.nom)))
+      : shogun ? el('div', { class: 'shogun' }, mon(shogun, true), el('span', { class: 'nom' }, shogun.nom)) : null,
+    etat.config.modeLames ? el('p', { class: 'sourd', style: 'margin:0' }, 'Mode Lames : pas d\'Héritier.')
+      : el('div', { class: 'heritier' }, el('span', { class: 'sourd' }, 'Héritier :'),
+        heritier ? el('span', { class: 'nom' }, heritier.nom) : el('span', { class: 'sourd' }, 'pas encore nommé')));
+
+  const tries = [...etat.joueurs].sort((a, b) => b.score - a.score);
+  const cour = el('section', { class: 'cour panneau' },
+    el('h2', {}, `La cour · objectif ${obj} points`),
+    el('ul', {}, tries.map((j) => {
+      const etiquettes = [];
+      if (j.id === etat.dechuId && vacant) etiquettes.push(el('span', { class: 'etiquette beni' }, 'Trône perdu'));
+      else if (j.id === etat.shogunId) etiquettes.push(el('span', { class: 'etiquette or' }, 'Shogun'));
+      if (j.id === etat.heritierId) etiquettes.push(el('span', { class: 'etiquette mousse' }, 'Héritier'));
+      if (j.disgracie) etiquettes.push(el('span', { class: 'etiquette beni' }, 'En disgrâce'));
+      if (!j.connecte) etiquettes.push(el('span', { class: 'etiquette' }, 'Déconnecté'));
+      return el('li', { class: (j.id === etat.shogunId ? 'est-shogun ' : '') + (j.connecte ? '' : 'absent') },
+        mon(j, j.id === etat.shogunId),
+        el('span', {}, el('span', { class: 'nom' }, j.nom), etiquettes),
+        el('span', { class: 'points', 'aria-label': `${j.score} points` },
+          Array.from({ length: obj }, (_, i) => el('i', { class: i < j.score ? 'gagne' : '' })),
+          j.score > obj ? el('b', {}, j.score) : null));
+    })));
+
+  const chro = el('section', { class: 'chronique panneau' },
+    el('h2', {}, 'Chronique'),
+    el('ol', {}, etat.chronique.map((c) => el('li', {}, c.manche ? el('small', {}, `M${c.manche}`) : null, c.texte))));
+  return el('aside', { class: 'cote' }, trone, cour, chro);
+}
+
+function rendrePartie(changementPhase) {
+  const avecMinuteur = ['cour', 'tigre', 'gong', 'conseil', 'verdict'].includes(etat.phase);
+  const titre = el('h1', { class: 'pinceau titre-phase' + (changementPhase ? ' encre' : '') }, PHASES[etat.phase]);
+  const zoneEncens = el('div', { class: 'encens', 'aria-hidden': 'true' });
+  const c = consigne();
+  const peutPasser = avecMinuteur;
+  const libellePasser = { cour: 'Nommer au hasard', tigre: 'Clore la nuit', gong: 'Continuer', conseil: 'Clore le vote', verdict: 'Manche suivante' }[etat.phase];
+  const main = el('section', {},
+    el('div', { class: 'entete' },
+      el('span', {}, etat.phase === 'fin' ? `Partie terminée en ${etat.manche} manches` : `Manche ${etat.manche} sur ${etat.config.manchesMax} au plus`),
+      el('div', { class: 'controles' },
+        ['cour', 'conseil'].includes(etat.phase) ? el('button', { onclick: () => commande('prolonger') }, '+30 s') : null,
+        peutPasser ? el('button', { onclick: () => commande('passer') }, libellePasser) : null,
+        el('button', { class: 'discret', onclick: () => document.getElementById('regles').showModal() }, 'Règles'))),
+    titre,
+    c ? el('p', { class: 'consigne' }, c) : null,
+    avecMinuteur ? zoneEncens : null,
+    el('div', { class: 'scene' }, scene()));
+  app.replaceChildren(el('div', { class: 'partie' }, main, colonneCour()));
+  if (avecMinuteur) { encens = Ombre.encens(zoneEncens); encens.regler(etat.debutPhase, etat.finPhase); }
+}
+</script>
+</body>
+</html>

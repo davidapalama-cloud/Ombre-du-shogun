@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ombre-du-shogun
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /ping
+    envVars:
+      - key: SHOGUN_EN_LIGNE
+        value: "1"
